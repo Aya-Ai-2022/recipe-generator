@@ -1,1 +1,16 @@
-node_modules\n.venv\n__pycache__\n*.pyc\nmodel
+# Python & virtual environments
+.venv/
+__pycache__/
+*.pyc
+
+# Node.js
+node_modules/
+
+# Model artifacts
+recipe_model/
+results/
+*.whl
+*.log
+
+# Optional: remove this if not relevant
+model
