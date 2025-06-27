@@ -1,8 +1,25 @@
-import streamlit as st
-import torch
-from transformers import GPT2Tokenizer, GPT2LMHeadModel
 
+from transformers import GPT2LMHeadModel, GPT2Tokenizer
+import streamlit as st
 # Custom CSS for modern design
+
+
+import gdown
+import tarfile
+import os
+
+if not os.path.exists("recipe_model"):
+    os.makedirs("recipe_model")
+    url = "https://drive.google.com/uc?id=1PsxH3PXeqiJsVl0vWS9tXS-dGDG1ZLDL"
+    output = "recipe_model.tar.gz"
+    gdown.download(url, output, quiet=False)
+
+    with tarfile.open(output, "r:gz") as tar:
+        tar.extractall()
+
+    os.remove("recipe_model.tar.gz")
+
+
 st.markdown("""
 <style>
 body {
@@ -53,31 +70,56 @@ h1 {
 </style>
 """, unsafe_allow_html=True)
 
-def generate_recipe(ingredients):
-    tokenizer = GPT2Tokenizer.from_pretrained('recipe_model')
-    model = GPT2LMHeadModel.from_pretrained('recipe_model')
-    tokenizer.pad_token = tokenizer.eos_token  # Use EOS token as pad token
-    tokenizer.pad_token_id = tokenizer.eos_token_id  # 50256 for GPT-2
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    model.to(device)
+tokenizer = GPT2Tokenizer.from_pretrained("recipe_model")
+model = GPT2LMHeadModel.from_pretrained("recipe_model")
+tokenizer.pad_token = tokenizer.eos_token
+tokenizer.pad_token_id = tokenizer.eos_token_id
 
-    prompt = f"Ingredients: {ingredients} | Recipe:"
-    inputs = tokenizer(prompt, return_tensors='pt', padding=True, truncation=True, max_length=64,return_attention_mask=True)
-    inputs = {k: v.to(device) for k, v in inputs.items()}
-    
+def generate_recipe(ingredients):
+    input_text = f"Ingredients: {ingredients}\nRecipe:"
+    inputs = tokenizer(
+        input_text,
+        return_tensors="pt",
+        padding=True,
+        truncation=True,
+        max_length=50,
+        return_attention_mask=True
+    )
     outputs = model.generate(
-        
         input_ids=inputs["input_ids"],
         attention_mask=inputs["attention_mask"],
-        max_length=256,
-        num_return_sequences=1,
+        max_length=200,
+        pad_token_id=tokenizer.pad_token_id,
         do_sample=True,
         top_k=50,
-        top_p=0.95,
-        temperature=0.7
+        top_p=0.95
     )
-    recipe = tokenizer.decode(outputs[0], skip_special_tokens=True)
-    return recipe
+    return tokenizer.decode(outputs[0], skip_special_tokens=True)
+# def generate_recipe(ingredients):
+#     tokenizer = GPT2Tokenizer.from_pretrained('recipe_model')
+#     model = GPT2LMHeadModel.from_pretrained('recipe_model')
+#     tokenizer.pad_token = tokenizer.eos_token  # Use EOS token as pad token
+#     tokenizer.pad_token_id = tokenizer.eos_token_id  # 50256 for GPT-2
+#     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+#     model.to(device)
+
+#     prompt = f"Ingredients: {ingredients} | Recipe:"
+#     inputs = tokenizer(prompt, return_tensors='pt', padding=True, truncation=True, max_length=64,return_attention_mask=True)
+#     inputs = {k: v.to(device) for k, v in inputs.items()}
+    
+#     outputs = model.generate(
+        
+#         input_ids=inputs["input_ids"],
+#         attention_mask=inputs["attention_mask"],
+#         max_length=256,
+#         num_return_sequences=1,
+#         do_sample=True,
+#         top_k=50,
+#         top_p=0.95,
+#         temperature=0.7
+#     )
+#     recipe = tokenizer.decode(outputs[0], skip_special_tokens=True)
+#     return recipe
 def format_recipe(recipe_text, ingredients):
     import re
 
