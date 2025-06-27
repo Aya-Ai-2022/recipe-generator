@@ -56,16 +56,20 @@ h1 {
 def generate_recipe(ingredients):
     tokenizer = GPT2Tokenizer.from_pretrained('recipe_model')
     model = GPT2LMHeadModel.from_pretrained('recipe_model')
+    tokenizer.pad_token = tokenizer.eos_token  # Use EOS token as pad token
+    tokenizer.pad_token_id = tokenizer.eos_token_id  # 50256 for GPT-2
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     model.to(device)
 
     prompt = f"Ingredients: {ingredients} | Recipe:"
-    inputs = tokenizer(prompt, return_tensors='pt', padding=True, truncation=True, max_length=256)
+    inputs = tokenizer(prompt, return_tensors='pt', padding=True, truncation=True, max_length=64,return_attention_mask=True)
     inputs = {k: v.to(device) for k, v in inputs.items()}
     
     outputs = model.generate(
-        inputs['input_ids'],
-        max_length=300,
+        
+        input_ids=inputs["input_ids"],
+        attention_mask=inputs["attention_mask"],
+        max_length=256,
         num_return_sequences=1,
         do_sample=True,
         top_k=50,
@@ -74,8 +78,9 @@ def generate_recipe(ingredients):
     )
     recipe = tokenizer.decode(outputs[0], skip_special_tokens=True)
     return recipe
-
 def format_recipe(recipe_text, ingredients):
+    import re
+
     # Split ingredients and recipe
     parts = recipe_text.split(" | Recipe:")
     if len(parts) < 2:
@@ -83,29 +88,29 @@ def format_recipe(recipe_text, ingredients):
 
     # Clean ingredient list
     ingredient_list = [ing.strip() for ing in ingredients.split(',') if ing.strip()]
-    
-    # Extract and clean recipe steps (handle list-like strings)
+
+    # Step 1: Extract raw steps string
     raw_steps = parts[1].strip()
 
-    # Try to safely evaluate stringified list (if it exists)
-    try:
-        import ast
-        parsed_steps = ast.literal_eval(raw_steps)
-        if isinstance(parsed_steps, list):
-            steps = [s.strip() for s in parsed_steps if s.strip()]
-        else:
-            steps = [s.strip() for s in raw_steps.split('.') if s.strip()]
-    except:
-        # Fall back to basic splitting if not a valid list
-        steps = [s.strip() for s in raw_steps.split('.') if s.strip()]
+    # Step 2: Clean it as a pseudo-list
+    # Remove brackets if present
+    raw_steps = raw_steps.strip("[]")
     
-    # Remove duplicates
-    seen_steps = set()
+    # Split on comma if it looks like a list
+    if "'," in raw_steps or '",' in raw_steps:
+        steps = re.split(r"'\s*,\s*'|\"\s*,\s*\"", raw_steps)
+    else:
+        # Fallback: split by period
+        steps = raw_steps.split(".")
+
+    # Step 3: Clean individual steps
     cleaned_steps = []
+    seen = set()
     for step in steps:
-        if step not in seen_steps and "Remove from heat and drain" not in step:
-            cleaned_steps.append(step)
-            seen_steps.add(step)
+        clean = step.strip(" '\"\n").strip()
+        if clean and clean not in seen:
+            cleaned_steps.append(clean)
+            seen.add(clean)
 
     # Format output
     output = "🍽️ Simple Recipe Guide\n\n"
@@ -120,6 +125,7 @@ def format_recipe(recipe_text, ingredients):
     output += "\n✅ **Ready to Serve!**\nEnjoy a warm, cozy dish filled with goodness!"
     
     return output
+
 
 
 
