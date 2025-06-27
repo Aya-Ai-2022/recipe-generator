@@ -4,3 +4,4 @@ torch==2.7.1
 datasets==3.6.0
 pandas==2.3.0
 click>=8.1.6
+gdown>=5.2.0
