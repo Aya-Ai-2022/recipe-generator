@@ -25,7 +25,22 @@
   - Dependencies listed in `requirements.txt`
   - Access to GPT-2 model files (hosted on Google Drive)
 
-  ### Installation (Local)
+
+  ### Option 1: Run with Docker (Recommended)
+
+  1. Pull the Docker image:
+     ```bash
+     docker pull caffein/recipe-generator:latest
+     ```
+  2. Run the container:
+     ```bash
+     docker run -p 8501:8501 caffein/recipe-generator:latest
+     ```
+  3. Access the app at `http://localhost:8501`.
+
+  The app downloads the GPT-2 model (~498 MB) from Google Drive on first run.
+
+### Option 2: Run Locally (Without Docker)
 
   1. Clone the repository:
      ```bash
@@ -46,25 +61,6 @@
      ```bash
      streamlit run app.py
      ```
-
-  ### Installation (Docker)
-
-  1. Clone the repository:
-     ```bash
-     git clone https://github.com/Aya-Ai-2022/recipe-generator.git
-     cd recipe-generator
-     ```
-  2. Build the Docker image:
-     ```bash
-     docker build -t recipe-generator .
-     ```
-  3. Run the Docker container:
-     ```bash
-     docker run -p 8501:8501 recipe-generator
-     ```
-  4. Access the app at `http://localhost:8501`.
-
-  The app downloads the GPT-2 model (~498 MB) from Google Drive on first run.
 
   ## 🛠️ How It Works
 
