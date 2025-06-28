@@ -99,41 +99,53 @@ except Exception as e:
 def format_recipe_output(raw_text, ingredients):
     if "Recipe:" not in raw_text:
         return f"❌ Invalid recipe format.\n\nRaw Output:\n\n{raw_text}"
-
+    
     try:
+        # Extract the recipe steps part
         steps_text = raw_text.split("Recipe:")[1].strip()
-        steps_text = steps_text.replace("[", "").replace("]", "").replace("'", "").replace('"', '')
-        raw_steps = [s.strip() for s in steps_text.split(",") if s.strip()]
+        
+        # Clean up the text
+        steps_text = steps_text.replace("[", "").replace("]", "").replace("'", "")
+        
+        # Split into steps, handling various formats
         steps = []
-
-        # Handle sentences with punctuation or no punctuation
-        for s in raw_steps:
-            if "." in s:
-                steps.extend([sub.strip() for sub in s.split(".") if sub.strip()])
-            else:
-                steps.append(s)
-
-        # Final cleanup
-        steps = [step for step in steps if len(step.split()) > 2]  # Filter out junk phrases
+        for step in steps_text.split("."):
+            step = step.strip()
+            if step:
+                # Capitalize first letter and ensure proper punctuation
+                if step and not step[0].isupper():
+                    step = step[0].upper() + step[1:]
+                if not step.endswith("."):
+                    step += "."
+                steps.append(step)
+        
+        if not steps:
+            return f"❌ No valid recipe steps generated.\n\nRaw Output:\n\n{raw_text}"
+        
+        # Process ingredients
+        ing_list = [ing.strip() for ing in ingredients.split(",") if ing.strip()]
+        
+        # Build the output with proper formatting
+        output = "<div class='recipe-section'>"
+        output += "<h3>🧂 Ingredients</h3>"
+        output += "<ul>"
+        for ing in ing_list:
+            output += f"<li>{ing}</li>"
+        output += "</ul>"
+        
+        output += "<h3>📖 Steps</h3>"
+        output += "<ol>"
+        for idx, step in enumerate(steps, 1):
+            output += f"<li>{step}</li>"
+        output += "</ol>"
+        
+        output += "<p>✅ <strong>Done!</strong><br>Enjoy your tasty creation 😋</p>"
+        output += "</div>"
+        
+        return output
+        
     except Exception as e:
         return f"❌ Failed to parse recipe steps. Error: {str(e)}\n\nRaw Output:\n\n{raw_text}"
-
-    # Format ingredients
-    ing_list = [ing.strip() for ing in ingredients.split(",") if ing.strip()]
-    output = "<h4>🧂 <strong>Ingredients</strong></h4>\n<ul>"
-    for ing in ing_list:
-        output += f"<li>{ing.capitalize()}</li>"
-    output += "</ul>"
-
-    # Format steps
-    output += "<h4>📖 <strong>Steps</strong></h4>\n<ol>"
-    for step in steps:
-        output += f"<li>{step}</li>"
-    output += "</ol>"
-
-    output += "<p>✅ <strong>Done!</strong><br>Enjoy your tasty creation 😋</p>"
-    return output
-
 
 def generate_recipe(ingredients):
     input_text = f"Ingredients: {ingredients}\nRecipe:"
