@@ -99,23 +99,41 @@ except Exception as e:
 def format_recipe_output(raw_text, ingredients):
     if "Recipe:" not in raw_text:
         return f"❌ Invalid recipe format.\n\nRaw Output:\n\n{raw_text}"
+
     try:
         steps_text = raw_text.split("Recipe:")[1].strip()
-        steps_text = steps_text.replace("[", "").replace("]", "").replace("'", "")
-        steps = [step.strip() for step in steps_text.split(".") if step.strip()]  # Split on periods for better step parsing
-        if not steps:
-            return f"❌ No valid recipe steps generated.\n\nRaw Output:\n\n{raw_text}"
+        steps_text = steps_text.replace("[", "").replace("]", "").replace("'", "").replace('"', '')
+        raw_steps = [s.strip() for s in steps_text.split(",") if s.strip()]
+        steps = []
+
+        # Handle sentences with punctuation or no punctuation
+        for s in raw_steps:
+            if "." in s:
+                steps.extend([sub.strip() for sub in s.split(".") if sub.strip()])
+            else:
+                steps.append(s)
+
+        # Final cleanup
+        steps = [step for step in steps if len(step.split()) > 2]  # Filter out junk phrases
     except Exception as e:
         return f"❌ Failed to parse recipe steps. Error: {str(e)}\n\nRaw Output:\n\n{raw_text}"
+
+    # Format ingredients
     ing_list = [ing.strip() for ing in ingredients.split(",") if ing.strip()]
-    output = "\n🧂 **Ingredients**\n"
+    output = "<h4>🧂 <strong>Ingredients</strong></h4>\n<ul>"
     for ing in ing_list:
-        output += f"- {ing}\n"
-    output += "\n📖 **Steps**\n"
-    for idx, step in enumerate(steps, 1):
-        output += f"{idx}. {step}\n"
-    output += "\n✅ **Done!**\nEnjoy your tasty creation 😋"
+        output += f"<li>{ing.capitalize()}</li>"
+    output += "</ul>"
+
+    # Format steps
+    output += "<h4>📖 <strong>Steps</strong></h4>\n<ol>"
+    for step in steps:
+        output += f"<li>{step}</li>"
+    output += "</ol>"
+
+    output += "<p>✅ <strong>Done!</strong><br>Enjoy your tasty creation 😋</p>"
     return output
+
 
 def generate_recipe(ingredients):
     input_text = f"Ingredients: {ingredients}\nRecipe:"
