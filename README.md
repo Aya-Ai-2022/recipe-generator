@@ -3,7 +3,7 @@
 
   Welcome to the **AI-Powered Recipe Generator**, a delightful web app that transforms your ingredients into delicious recipes using the power of GPT-2! Built with Streamlit, containerized with Docker, and deployed on Streamlit Community Cloud, this project showcases my expertise in natural language processing, machine learning, and modern deployment practices.
 
-  🌐 **Live Demo**: [Try it now!](https://recipe-generator-gpt2.streamlit.app/)
+  🌐 **Live Demo** : [Try it now!](https://recipe-generator-gpt2.streamlit.app/)
 
   ## 🎯 Project Overview
 
