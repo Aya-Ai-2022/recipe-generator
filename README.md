@@ -1,108 +1,114 @@
 
 # 🍳 AI-Powered Recipe Generator
 
-Welcome to the **AI-Powered Recipe Generator**, a delightful web app that transforms your ingredients into delicious recipes using the power of GPT-2! Built with Streamlit and deployed on Streamlit Community Cloud, this project showcases my expertise in natural language processing, machine learning, and web development.
+  Welcome to the **AI-Powered Recipe Generator**, a delightful web app that transforms your ingredients into delicious recipes using the power of GPT-2! Built with Streamlit, containerized with Docker, and deployed on Streamlit Community Cloud, this project showcases my expertise in natural language processing, machine learning, and modern deployment practices.
 
-🌐 **Live Demo**: Try it now!
-![https://recipe-generator-gpt2.streamlit.app/]
+  🌐 **Live Demo**: [Try it now!](https://recipe-generator-gpt2.streamlit.app/)
 
-## 🎯 Project Overview
+  ## 🎯 Project Overview
 
-Ever wonder what to cook with the ingredients in your pantry? This app takes your input (e.g., "chicken, rice, broccoli") and generates a custom recipe with clear, step-by-step instructions. Powered by a fine-tuned GPT-2 model, it delivers creative and practical recipes in a sleek, user-friendly interface.
+  Ever wonder what to cook with the ingredients in your pantry? This app takes your input (e.g., "chicken, rice, broccoli") and generates a custom recipe with clear, step-by-step instructions. Powered by a fine-tuned GPT-2 model, it delivers creative and practical recipes in a sleek, user-friendly interface.
 
-### Features
+  ### Features
 
-- **AI-Driven Recipes**: Generates recipes using a fine-tuned GPT-2 model.
-- **Modern UI**: Clean, responsive design with custom CSS for a delightful user experience.
-- **Robust Deployment**: Hosted on Streamlit Community Cloud for seamless access.
-- **Error Handling**: Fallback steps ensure complete recipes even if the model output is limited.
+  - **AI-Driven Recipes**: Generates recipes using a fine-tuned GPT-2 model.
+  - **Modern UI**: Clean, responsive design with custom CSS.
+  - **Robust Deployment**: Hosted on Streamlit Community Cloud with Docker support for local runs.
+  - **Smart Output**: Filters incoherent steps and provides detailed defaults for consistent recipes.
 
-## 🚀 Getting Started
+  ## 🚀 Getting Started
 
-### Prerequisites
+  ### Prerequisites
 
-#### 🐍 Python Version
+  - Python 3.13 (for local runs without Docker)
+  - [Docker](https://www.docker.com/get-started) (optional, for containerized setup)
+  - Dependencies listed in `requirements.txt`
+  - Access to GPT-2 model files (hosted on Google Drive)
 
-This project uses **Python 3.9** (via `python:3.9-slim` in Docker).
+  ### Installation (Local)
 
-> ⚠️ If you are using a local environment, please ensure your Python version is **>=3.9** for compatibility.
+  1. Clone the repository:
+     ```bash
+     git clone https://github.com/Aya-Ai-2022/recipe-generator.git
+     cd recipe-generator
+     ```
+  2. Create and activate a virtual environment:
+     ```bash
+     python -m venv .venv
+     .venv\Scripts\activate  # Windows
+     source .venv/bin/activate  # Linux/Mac
+     ```
+  3. Install dependencies:
+     ```bash
+     pip install -r requirements.txt
+     ```
+  4. Run the app:
+     ```bash
+     streamlit run app.py
+     ```
 
-- Dependencies listed in `requirements.txt`
-- Access to the GPT-2 model files (hosted on Google Drive)
+  ### Installation (Docker)
 
-### Installation
+  1. Clone the repository:
+     ```bash
+     git clone https://github.com/Aya-Ai-2022/recipe-generator.git
+     cd recipe-generator
+     ```
+  2. Build the Docker image:
+     ```bash
+     docker build -t recipe-generator .
+     ```
+  3. Run the Docker container:
+     ```bash
+     docker run -p 8501:8501 recipe-generator
+     ```
+  4. Access the app at `http://localhost:8501`.
 
-1. Clone the repository:
+  The app downloads the GPT-2 model (~498 MB) from Google Drive on first run.
 
-   ```bash
-   git clone https://github.com/Aya-Ai-2022/recipe-generator.git
-   cd recipe-generator
-   ```
-2. Create and activate a virtual environment:
+  ## 🛠️ How It Works
 
-   ```bash
-   python -m venv .venv
-   .venv\Scripts\activate  # Windows
-   source .venv/bin/activate  # Linux/Mac or use windows but use git bash terminal
-   ```
-3. Install dependencies:
+  1. **Input**: Enter ingredients (e.g., "chicken, rice, broccoli") in the text box.
+  2. **Model**: A fine-tuned GPT-2 model generates a recipe, with filtering to remove incoherent outputs.
+  3. **Output**: Formatted recipe with ingredients, numbered steps, and serving suggestions, styled with a modern UI.
+  4. **Deployment**: Hosted on Streamlit Community Cloud, with Docker support for local reproducibility.
 
-   ```bash
-   pip install -r requirements.txt
-   ```
-4. Run the app locally:
+  ## 📸 Demo
 
-   ```bash
-   streamlit run app.py
-   ```
 
-The app will download the GPT-2 model (\~498 MB) from Google Drive on first run and launch at `http://localhost:8501`.
 
-## 🛠️ How It Works
+  Try it out at [recipe-generator-aya.streamlit.app](https://recipe-generator-gpt2.streamlit.app/)!
 
-1. **Input**: Enter ingredients (e.g., "chicken, rice, broccoli") in the text box.
-2. **Model**: A fine-tuned GPT-2 model generates a recipe based on the input.
-3. **Output**: The app formats the recipe with ingredients, numbered steps, and serving suggestions, styled with a modern UI.
-4. **Deployment**: Hosted on Streamlit Community Cloud, with model files fetched from Google Drive to optimize performance.
+  ## 🧠 Technical Details
 
-## 📸 Demo
+  - **Model**: GPT-2, fine-tuned for recipe generation (model files hosted on Google Drive).
+  - **Framework**: Streamlit for the web interface, Docker for containerization.
+  - **Libraries**: `transformers`, `torch`, `gdown`, `streamlit`.
+  - **Deployment**: Streamlit Community Cloud (Python 3.13) and Docker.
+  - **Challenges Overcome**:
+    - Fixed meta tensor errors in model loading.
+    - Mitigated hallucinations with enhanced generation parameters and output filtering.
+    - Optimized model storage using Google Drive.
 
-![https://recipe-generator-gpt2.streamlit.app/](demo.gif)
 
-Try it out at https://recipe-generator-gpt2.streamlit.app/!
 
-## 🧠 Technical Details
+  ## This project demonstrates:
+  - Build and deploy AI-powered web applications.
+  - Fine-tune large language models (**LLM**) like GPT-2.
+  - Create user-friendly interfaces with custom styling.
+  - Use Docker for portable, reproducible environments.
 
-- **Model**: GPT-2, fine-tuned for recipe generation (model files hosted on Google Drive).
-- **Framework**: Streamlit for the web interface.
-- **Libraries**: `transformers`, `torch`, `gdown`, `streamlit`.
-- **Deployment**: Streamlit Community Cloud.
-- **Challenges Overcome**:
-  - Fixed meta tensor errors in model loading.
-  - Enhanced output with detailed steps and robust formatting.
-  - Optimized model storage using Google Drive.
+  ## 📬 Contact
 
-## 🌟 Why This Project Shines
+  - **GitHub**: [Aya-Ai-2022](https://github.com/Aya-Ai-2022)
 
-This project demonstrates my ability to:
+  - **Portfolio**: [Aya portfolio](https://aya2020.xyz/)
 
-- Build and deploy AI-powered web applications.
-- Fine-tune and integrate large language models like GPT-2.
-- Create user-friendly interfaces with custom styling.
-- Solve complex deployment issues (e.g., meta tensor errors, model loading).
+  Feel free to star ⭐ this repository or reach out with feedback!
 
-## 📬 Contact
+  ## 🔮 Future Enhancements
 
-- **GitHub**: Aya-Ai-2022
+  - Support for dietary preferences (e.g., gluten-free,diabetes).
+  - Recipe rating system.
+  - Further model fine-tuning for richer outputs.
 
-- **Portfolio**: \[aya2020.xyz\]
-
-Feel free to star ⭐ this repository or reach out with feedback!
-
-## 🔮 Future Enhancements
-
-- Add support for dietary preferences (e.g., vegan, gluten-free).
-- Integrate a recipe rating system.
-- Fine-tune the model further for more creative outputs.
-
-Bon appétit! 🍽️
